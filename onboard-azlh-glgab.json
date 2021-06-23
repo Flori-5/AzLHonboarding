@@ -20,32 +20,29 @@
         "managedByTenantId": {
             "type": "string",
             "metadata": {
-                "description": "Specify the tenant id of the Managed Service Provider"
+                "description": "Tenant ID provided by GKGAB"
             },
-            "defaultValue": "a53834b7-42bc-46a3-b004-369735c3acf9"
+            "defaultValue": "xxxx-xxxx-xxxx-xxxx-xxxx"
         },
-        "authorizations": {
-            "type": "array",
+        "ContributorPrincipalID": {
+            "type": "string",
             "metadata": {
-                "description": "Specify  an array of objects, containing tuples of Azure Active Directory principalId, a Azure roleDefinitionId, and an optional principalIdDisplayName. The roleDefinition specified is granted to the principalId in the provider's Active Directory and the principalIdDisplayName is visible to customers."
+                "description": "Object ID of Contributor Group provided by GKGAB"
             },
-            "defaultValue": [
+            "defaultValue": "xxxx-xxxx-xxxx-xxxx-xxxx"
+        }            
+    },
+    "variables": {
+        "mspRegistrationName": "[guid(parameters('mspOfferName'))]",
+        "mspAssignmentName": "[guid(parameters('mspOfferName'))]",
+        "authorizations": [
                 { 
-                    "principalId": "196ae378-c291-4665-be0d-28702a0ddca9", 
-                    "roleDefinitionId": "acdd72a7-3385-48ef-bd42-f606fba81ae7",
-                    "principalIdDisplayName": "GKGAB Azure Lighthouse Reader" 
-                }, 
-                { 
-                    "principalId": "f6f84665-5266-4c0f-a3e5-9f5148d03b26", 
+                    "principalId": "[parameters('ContributorPrincipalID')]", 
                     "roleDefinitionId": "b24988ac-6180-42a0-ab88-20f7382dd24c",
                     "principalIdDisplayName": "GKGAB Azure Lighthouse Contributor" 
                 }   
             ]
-        }              
-    },
-    "variables": {
-        "mspRegistrationName": "[guid(parameters('mspOfferName'))]",
-        "mspAssignmentName": "[guid(parameters('mspOfferName'))]"
+
     },
     "resources": [
         {
@@ -56,7 +53,7 @@
                 "registrationDefinitionName": "[parameters('mspOfferName')]",
                 "description": "[parameters('mspOfferDescription')]",
                 "managedByTenantId": "[parameters('managedByTenantId')]",
-                "authorizations": "[parameters('authorizations')]"
+                "authorizations": "[variables('authorizations')]"
             }
         },
         {
@@ -78,7 +75,7 @@
         },
         "authorizations": {
             "type": "array",
-            "value": "[parameters('authorizations')]"
+            "value": "[variables('authorizations')]"
         }
     }
 }
