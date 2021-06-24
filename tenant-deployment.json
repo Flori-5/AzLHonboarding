@@ -93,7 +93,7 @@
                 {
                     "type": "Microsoft.ManagedServices/registrationDefinitions",
                     "apiVersion": "2019-09-01",
-                    "name": "[variables('mspRegistrationName')]",
+                    "name": "[concat(variables('mspRegistrationName'), copyIndex())]",
                     "properties": {
                         "registrationDefinitionName": "[parameters('mspOfferName')]",
                         "description": "[parameters('mspOfferDescription')]",
@@ -104,12 +104,12 @@
                 {
                     "type": "Microsoft.ManagedServices/registrationAssignments",
                     "apiVersion": "2019-09-01",
-                    "name": "[variables('mspAssignmentName')]",
+                    "name": "[concat(variables('mspAssignmentName'), copyIndex())]",
                     "dependsOn": [
-                        "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('mspRegistrationName'))]"
+                        "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('mspRegistrationName', copyIndex()))]"
                     ],
                     "properties": {
-                        "registrationDefinitionId": "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('mspRegistrationName'))]"
+                        "registrationDefinitionId": "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('mspRegistrationName', copyIndex()))]"
                     }
                 }
             ]
