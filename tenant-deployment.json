@@ -2,6 +2,13 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-08-01/tenantDeploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {       
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the deployment region"
+            },
+            "defaultValue": "West Europe"
+        },  
         "mspOfferName": {
             "type": "string",
             "metadata": {
@@ -82,6 +89,7 @@
         "type": "Microsoft.Resources/deployments",
         "apiVersion": "2020-06-01",
         "name": "[concat('subAssignment', copyIndex())]",
+        "location": "[guid(parameters('location'))]",
         "subscriptionId": "[parameters('SubscribtionIDs')[copyIndex()].subID]",
         "copy": {
             "name": "deploymentCopy",
