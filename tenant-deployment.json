@@ -89,7 +89,7 @@
         "type": "Microsoft.Resources/deployments",
         "apiVersion": "2020-06-01",
         "name": "[concat('subAssignment', copyIndex())]",
-        "location": "[guid(parameters('location'))]",
+        "location": "[parameters('location')]",
         "subscriptionId": "[parameters('SubscribtionIDs')[copyIndex()].subID]",
         "copy": {
             "name": "deploymentCopy",
