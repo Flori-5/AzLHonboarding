@@ -109,7 +109,7 @@
                         "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('mspRegistrationName', copyIndex()))]"
                     ],
                     "properties": {
-                        "registrationDefinitionId": "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', [guid(parameters('SubscribtionIDs')[copyIndex()].subID)])]"
+                        "registrationDefinitionId": "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', '[guid(parameters('SubscribtionIDs')[copyIndex()].subID)]')]"
                     }
                 }
             ]
