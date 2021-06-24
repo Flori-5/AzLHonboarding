@@ -95,9 +95,6 @@
             "name": "deploymentCopy",
             "count": "[length(parameters('SubscribtionIDs'))]"
         },
-        "dependsOn": [
-            "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('mspRegistrationName'))]"
-        ],
         "properties": {
           "mode": "Incremental",
           "template": {
@@ -105,9 +102,23 @@
             "contentVersion": "1.0.0.0",
             "resources": [
                 {
+                    "type": "Microsoft.ManagedServices/registrationDefinitions",
+                    "apiVersion": "2019-09-01",
+                    "name": "[variables('mspRegistrationName')]",
+                    "properties": {
+                        "registrationDefinitionName": "[parameters('mspOfferName')]",
+                        "description": "[parameters('mspOfferDescription')]",
+                        "managedByTenantId": "[parameters('managedByTenantId')]",
+                        "authorizations": "[variables('authorizations')]"
+                    }
+                },
+                {
                     "type": "Microsoft.ManagedServices/registrationAssignments",
                     "apiVersion": "2019-09-01",
                     "name": "[variables('mspAssignmentName')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('mspRegistrationName'))]"
+                    ],
                     "properties": {
                         "registrationDefinitionId": "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('mspRegistrationName'))]"
                     }
