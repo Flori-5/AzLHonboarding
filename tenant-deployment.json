@@ -1,14 +1,7 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2019-08-01/tenantDeploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {
-        "location": {
-            "type": "string",
-            "metadata": {
-                "description": "Specify the deployment region"
-            },
-            "defaultValue": "West Europe"
-        },        
+    "parameters": {       
         "mspOfferName": {
             "type": "string",
             "metadata": {
@@ -89,7 +82,7 @@
         "type": "Microsoft.Resources/deployments",
         "apiVersion": "2020-06-01",
         "name": "[concat('subAssignment', copyIndex())]",
-        "location": "westus2",
+        "location": "[guid(parameters('region'))]",
         "subscriptionId": "[parameters('SubscribtionIDs')[copyIndex()].subID]",
         "copy": {
             "name": "deploymentCopy",
