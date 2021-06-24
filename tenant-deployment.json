@@ -1,0 +1,130 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-08-01/tenantDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the deployment region"
+            },
+            "defaultValue": "West Europe"
+        },        
+        "mspOfferName": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify a unique name for your offer"
+            },
+            "defaultValue": "GKGAB Azure Managed Service - Access privileges"
+
+        },
+        "mspOfferDescription": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Managed Service Provider offering"
+            },
+            "defaultValue": "The solution will grant glueckkanja-gab AG following RBAC role to your subscribtion: Reader - GKGAB Azure Lighthouse Reader"
+        },
+        "managedByTenantId": {
+            "type": "string",
+            "metadata": {
+                "description": "Tenant ID provided by GKGAB"
+            },
+            "defaultValue": "xxxx-xxxx-xxxx-xxxx-xxxx"
+        },
+        "ReaderPrincipalID": {
+            "type": "string",
+            "metadata": {
+                "description": "Object ID of Reader Group provided by GKGAB"
+            },
+            "defaultValue": "xxxx-xxxx-xxxx-xxxx-xxxx"
+        },
+        "SubscribtionIDs": {
+            "type": "array",
+              "metadata": { 
+                "description": "Note: Subscribtions must already exist in tenant" 
+            },
+             "defaultValue": [
+                {
+                    "subID": "test"
+                },
+                {
+                    "subID": "test2"
+                },
+                {
+                    "subID": "test3"
+                }
+            ] 
+        }             
+    },
+    "variables": {
+        "mspRegistrationName": "[guid(parameters('mspOfferName'))]",
+        "mspAssignmentName": "[guid(parameters('mspOfferName'))]",
+        "authorizations": [
+                { 
+                    "principalId": "[parameters('ReaderPrincipalID')]", 
+                    "roleDefinitionId": "b24988ac-6180-42a0-ab88-20f7382dd24c",
+                    "principalIdDisplayName": "GKGAB Azure Lighthouse Reader" 
+                },                { 
+                    "principalId": "[parameters('ReaderPrincipalID')]", 
+                    "roleDefinitionId": "91c1777a-f3dc-4fae-b103-61d183457e46",
+                    "principalIdDisplayName": "Remove GKGAB Azure Lighthouse Delegation" 
+                }
+
+            ]
+
+    },
+    "resources": [
+        {
+            "type": "Microsoft.ManagedServices/registrationDefinitions",
+            "apiVersion": "2019-09-01",
+            "name": "[variables('mspRegistrationName')]",
+            "properties": {
+                "registrationDefinitionName": "[parameters('mspOfferName')]",
+                "description": "[parameters('mspOfferDescription')]",
+                "managedByTenantId": "[parameters('managedByTenantId')]",
+                "authorizations": "[variables('authorizations')]"
+            }
+        },
+      {
+        "type": "Microsoft.Resources/deployments",
+        "apiVersion": "2020-06-01",
+        "name": "[concat('subAssignment', copyIndex())]",
+        "location": "westus2",
+        "subscriptionId": "[parameters('SubscribtionIDs')[copyIndex()].subID]",
+        "copy": {
+            "name": "deploymentCopy",
+            "count": "[length(parameters('SubscribtionIDs'))]"
+        },
+        "dependsOn": [
+            "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('mspRegistrationName'))]"
+        ],
+        "properties": {
+          "mode": "Incremental",
+          "template": {
+            "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+            "contentVersion": "1.0.0.0",
+            "resources": [
+                {
+                    "type": "Microsoft.ManagedServices/registrationAssignments",
+                    "apiVersion": "2019-09-01",
+                    "name": "[variables('mspAssignmentName')]",
+                    "properties": {
+                        "registrationDefinitionId": "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('mspRegistrationName'))]"
+                    }
+                }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": {
+        "mspOfferName": {
+            "type": "string",
+            "value": "[concat('Managed by', ' ', parameters('mspOfferName'))]"
+        },
+        "authorizations": {
+            "type": "array",
+            "value": "[variables('authorizations')]"
+        }
+    }
+  }
